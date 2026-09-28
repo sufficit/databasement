@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\BackupJobController;
 use App\Http\Controllers\Api\V1\BackupScheduleController;
 use App\Http\Controllers\Api\V1\DatabaseServerController;
 use App\Http\Controllers\Api\V1\DatabaseServerSshConfigController;
+use App\Http\Controllers\Api\V1\MysqlMonitorController;
 use App\Http\Controllers\Api\V1\ScheduledRestoreController;
 use App\Http\Controllers\Api\V1\SnapshotController;
 use App\Http\Controllers\Api\V1\UserOrganizationController;
@@ -12,6 +13,10 @@ use App\Http\Controllers\Api\V1\VolumeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->name('api.')->prefix('v1')->group(function () {
+    Route::get('database-servers/{database_server}/mysql-monitor', [MysqlMonitorController::class, 'index']);
+    Route::post('database-servers/{database_server}/mysql-monitor/collect', [MysqlMonitorController::class, 'collect'])
+        ->middleware('throttle:6,1');
+
     Route::apiResource('database-servers', DatabaseServerController::class)
         ->only(['index', 'show', 'store', 'destroy']);
     Route::put('database-servers/{database_server}', [DatabaseServerController::class, 'update'])
